@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Iron Forge — Food Nutrition Analyzer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/gym-landing.css" />
+<style>
+  .fna-wrap { min-height:100vh; padding:100px 6vw 60px; background:var(--bg); }
+  .fna-head { text-align:center; margin-bottom:40px; }
+  .fna-head h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(40px,7vw,72px); }
+  .fna-head h1 .accent { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .fna-head p { color:var(--muted); max-width:600px; margin:12px auto 0; }
+  .fna-input-card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; max-width:900px; margin:0 auto 32px; }
+  .fna-input-card label { display:block; color:var(--muted); font-size:13px; margin-bottom:10px; letter-spacing:.5px; text-transform:uppercase; }
+  .fna-textarea { width:100%; min-height:140px; background:var(--bg); border:1px solid var(--line); border-radius:10px; color:var(--text); font-size:16px; font-family:inherit; padding:16px; resize:vertical; transition:border-color .2s, box-shadow .2s; }
+  .fna-textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(255,59,48,.15); }
+  .fna-actions { display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; }
+  .fna-btn { padding:14px 28px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:15px; cursor:pointer; transition:transform .2s, box-shadow .2s; }
+  .fna-btn:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(255,59,48,.5); }
+  .fna-btn.secondary { background:transparent; border:1px solid var(--line); color:var(--text); }
+  .fna-btn.secondary:hover { border-color:var(--text); }
+  .fna-items { max-width:900px; margin:0 auto 24px; }
+  .fna-item { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:12px; }
+  .fna-item .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:10px; }
+  .fna-item select, .fna-item input { padding:10px 12px; background:var(--bg); border:1px solid var(--line); color:var(--text); border-radius:8px; font-family:inherit; }
+  .fna-item .meta { color:var(--muted); font-size:12px; margin-top:6px; }
+  .fna-item .badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; margin-left:8px; }
+  .badge.raw { background:#1a2a1a; color:#4cd964; }
+  .badge.cooked { background:#2a1a1a; color:#ff9500; }
+  .badge.unknown { background:#2a2a2a; color:var(--muted); }
+  .fna-calc-card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; max-width:900px; margin:0 auto 24px; display:none; }
+  .fna-results { max-width:900px; margin:0 auto; display:none; }
+  .fna-results.show { display:block; }
+  .fna-summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:24px; }
+  .fna-stat { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .fna-stat .lbl { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:1px; }
+  .fna-stat .val { font-family:'Bebas Neue',sans-serif; font-size:28px; margin-top:6px; }
+  .fna-stat .val span { color:var(--muted); font-size:13px; }
+  .fna-section-title { font-family:'Bebas Neue',sans-serif; font-size:24px; margin:24px 0 12px; }
+  .fna-breakdown { display:grid; gap:12px; }
+  .fna-food-card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; }
+  .fna-food-card .name { font-weight:600; font-size:16px; }
+  .fna-food-card .src { color:var(--muted); font-size:12px; margin-top:4px; }
+  .fna-food-card .nums { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:8px; margin-top:12px; font-size:13px; }
+  .fna-food-card .nums div { background:var(--bg2); border-radius:6px; padding:8px; }
+  .fna-food-card .nums strong { color:var(--accent); }
+  .fna-unavail { color:var(--muted); font-style:italic; font-size:13px; }
+  .fna-note { text-align:center; color:var(--muted); font-size:13px; margin-top:24px; font-style:italic; }
+  .fna-loading { text-align:center; color:var(--muted); padding:20px; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">IRON<span>FORGE</span></div>
+  <ul>
+    <li><a href="/pages/gym-landing.html">Home</a></li>
+    <li><a href="/pages/food-nutrition-analyzer.html">Food Nutrition Analyzer</a></li>
+    <li><a href="/pages/nutrition-calculator.html">Nutrition Calculator</a></li>
+  </ul>
+</nav>
+<div class="fna-wrap">
+  <div class="fna-head">
+    <h1>FOOD NUTRITION <span class="accent">ANALYZER</span></h1>
+    <p>Enter the foods you've eaten and get a detailed nutritional breakdown. Results are based on verified food composition data.</p>
+  </div>
+
+  <div class="fna-input-card">
+    <label for="foodInput">Describe your meal</label>
+    <textarea id="foodInput" class="fna-textarea" placeholder="100g paneer, 2 roti, 1 bowl dal..."></textarea>
+    <div class="fna-actions">
+      <button class="fna-btn" id="analyzeBtn">Analyze Food</button>
+      <button class="fna-btn secondary" id="clearBtn">Clear</button>
+    </div>
+  </div>
+
+  <div class="fna-items" id="itemsContainer"></div>
+
+  <div class="fna-calc-card" id="calcCard">
+    <div class="fna-actions">
+      <button class="fna-btn" id="calcBtn">Calculate Nutrition</button>
+    </div>
+  </div>
+
+  <div class="fna-results" id="results">
+    <div class="fna-summary" id="summary"></div>
+    <div class="fna-section-title">INDIVIDUAL FOOD BREAKDOWN</div>
+    <div class="fna-breakdown" id="breakdown"></div>
+    <div class="fna-note">All values calculated deterministically from verified database records (per-100g). Missing nutrients shown as unavailable. Source and reference ID displayed per food.</div>
+    <div class="fna-actions" style="margin-top:20px;">
+      <button class="fna-btn" id="saveAnalysisBtn">Save Analysis</button>
+    </div>
+  </div>
+
+  <div class="fna-history-section" id="historySection" style="max-width:900px;margin:32px auto 0;">
+    <div class="fna-section-title">MY FOOD HISTORY</div>
+    <div class="fna-actions" style="margin-bottom:16px;">
+      <input type="date" id="historyDateFilter" style="padding:10px 14px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:8px;font-family:inherit;" />
+      <button class="fna-btn secondary" id="loadHistoryBtn">Load History</button>
+    </div>
+    <div id="historyList" class="fna-breakdown"></div>
+    <div id="historyStatus" style="text-align:center;color:var(--muted);font-size:13px;margin-top:8px;"></div>
+  </div>
+
+  <div class="fna-history-section" id="dailySummarySection" style="max-width:900px;margin:32px auto 0;">
+    <div class="fna-section-title">DAILY NUTRITION SUMMARY</div>
+    <div class="fna-actions" style="margin-bottom:16px;">
+      <input type="date" id="dailyDateFilter" style="padding:10px 14px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:8px;font-family:inherit;" />
+      <button class="fna-btn secondary" id="loadDailyBtn">Load Daily Summary</button>
+    </div>
+    <div id="dailySummaryCards" class="fna-summary"></div>
+    <div id="dailyStatus" style="text-align:center;color:var(--muted);font-size:13px;margin-top:8px;"></div>
+  </div>
+
+  <div class="fna-history-section" id="weeklyTrendsSection" style="max-width:900px;margin:32px auto 0;">
+    <div class="fna-section-title">WEEKLY NUTRITION TRENDS</div>
+    <div class="fna-actions" style="margin-bottom:16px;">
+      <button class="fna-btn secondary" id="prevWeekBtn">&larr; Previous Week</button>
+      <input type="date" id="weeklyDateFilter" style="padding:10px 14px;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:8px;font-family:inherit;" />
+      <button class="fna-btn secondary" id="nextWeekBtn">Next Week &rarr;</button>
+    </div>
+    <div id="weeklyAvgCards" class="fna-summary" style="margin-bottom:16px;"></div>
+    <div id="weeklyChart" style="display:flex;align-items:flex-end;gap:8px;height:200px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:16px;"></div>
+    <div id="weeklyTrendList" class="fna-breakdown"></div>
+    <div id="weeklyStatus" style="text-align:center;color:var(--muted);font-size:13px;margin-top:8px;"></div>
+  </div>
+</div>
+
+
+<script src="/js/food-identify.js"></script>
+<script src="/js/food-nutrition-analyzer.js"></script>
+</body>
+</html>

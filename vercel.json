@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "outputDirectory": "public",
+  "rewrites": [
+    { "handle": "filesystem" },
+    { "source": "/api/:path*", "destination": "https://RENDER-BACKEND-URL.onrender.com/api/:path*" },
+    { "source": "/", "destination": "/pages/gym-landing.html" }
+  ]
+}
