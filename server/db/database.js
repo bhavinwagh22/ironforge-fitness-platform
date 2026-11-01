@@ -13,10 +13,12 @@ if (!fs.existsSync(dbDir)) {
 }
 
 // Do not silently create a fresh production database if the expected
-// persistent database file is missing. In production, warn loudly.
-if (process.env.NODE_ENV === 'production' && !fs.existsSync(DB_PATH)) {
+// persistent database file is missing. Allow it only when explicitly
+// opted in via ALLOW_DB_INIT=true.
+if (process.env.NODE_ENV === 'production' && !fs.existsSync(DB_PATH) && process.env.ALLOW_DB_INIT !== 'true') {
   console.error(`[DB] FATAL: Expected database file not found at ${DB_PATH}`);
   console.error('[DB] Refusing to create a fresh database in production.');
+  console.error('[DB] Set ALLOW_DB_INIT=true to initialize a new database.');
   process.exit(1);
 }
 
