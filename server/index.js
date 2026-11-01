@@ -22,6 +22,7 @@ const app = express();
 app.set('trust proxy', 1);
 
 setupSecurity(app);
+app.use(express.static(path.join(__dirname, '..', 'public')));
 registerPageRoutes(app, { authMiddleware, escapeHtml });
 registerAuthRoutes(app, { db, loginAttempts, registerAttempts, loginLimiter, registerLimiter, authMiddleware, isValidEmail, signToken, setAuthCookie, clearAuthCookie, escapeHtml });
 registerFoodRoutes(app, { db, authMiddleware });
